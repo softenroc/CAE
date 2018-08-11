@@ -6,8 +6,8 @@ function CalculaEdad( $fecha ) {
     return( date("md") < $m.$d ? date("Y")-$Y-1 : date("Y")-$Y );
 }
 
-
-echo "fecha: ".argv[0];
+echo "Hora Actual: ".date("Y-m-d h:i:s");
+echo "Edad mia: ".CalculaEdad("1985-04-02");
 
 
 ?>

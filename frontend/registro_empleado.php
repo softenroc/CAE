@@ -2,6 +2,8 @@
 session_start();
 
 require("../complementos/connect_db.php");
+require("../complementos/listas_maestras.php");
+
  ?>
 <!DOCTYPE html>
 <html>
@@ -49,6 +51,7 @@ require("../complementos/connect_db.php");
 
 							while($var = mysqli_fetch_array($result)){
 								$select="";
+
 								if($var['id_tipo_documento']==$_SESSION['tipo_documento']){
 									$select="selected";
 								}								
@@ -86,7 +89,7 @@ require("../complementos/connect_db.php");
 			<td>Dirección: </td>
 					<td><!--Campo de texto-->
 						<textarea rows="4" cols="30" name="direccion" id="direccion"></textarea>
-			<td>Hoja de vida:</td>:					
+			<td>Hoja de vida:</td>				
 					<td>
 					<input type="file" name="hoja_vida" accept=".doc, .pdf" id="hoja_vida">
 				</td>
@@ -157,12 +160,22 @@ require("../complementos/connect_db.php");
 					<br>
 					<br>
 					 <!--Campo de texto-->
-						<input type="checkbox" name="CentroCosto[]" value="A"> Compras <br>
-						<input type="checkbox" name="CentroCosto[]" value="B"> Ventas <br>
-						<input type="checkbox" name="CentroCosto[]" value="C"> Finanzas <br>
-						<input type="checkbox" name="CentroCosto[]" value="D"> RRHH <br>
-						<input type="checkbox" name="CentroCosto[]" value="E"> Logística <br>
-						<input type="checkbox" name="CentroCosto[]" value="F"> Producción <br>
+		
+						<?php
+							$query = "SELECT id_centro_costo,centro_costo FROM centro_costo WHERE activo=1";
+							$result = mysqli_query($connect_db,$query);
+
+							while($var = mysqli_fetch_array($result)){
+								$checked="";
+								foreach($_SESSION['CentroCosto'] as $ccosto_checked){
+									if($var['id_centro_costo']==$ccosto_checked){
+									$checked="checked";
+									}	
+									}											
+								echo "<input type='checkbox' name='CentroCosto[]' value=".$var['id_centro_costo']." $checked> ".$var['centro_costo']." <br>";			
+								
+							}
+							?>	
 				</tr>
 
 				<tr>
@@ -173,16 +186,12 @@ require("../complementos/connect_db.php");
 				</tr>
 
 			<td>Lugar de trabajo: </td>
-					<td><!--Campo de texto-->
-						<select name="lugar_trabajo" id="lugar_trabajo">
-							<option value="0"> Seleccione un lugar de trabajo </option>
-							<option value="1"> Bogotá </option>
-							<option value="5"> Medellín </option>
-							<option value="3"> Cali </option>
-							<option value="12"> Barranquilla </option>
-							<option value="18"> Cartagena </option>
-							<option value="15"> No aplica </option>
-
+					<td><!--Campo de texto-->						
+							<?php
+							foreach (select_lugar_trabajo($connect_db,$_SESSION['lugar_trabajo'],'lugar_trabajo') as $key => $value) {
+								echo $value;
+							}							
+							?>
 						</td>
 
 			<td>Turno: 

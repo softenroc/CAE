@@ -1,3 +1,8 @@
+<?php 
+session_start();
+
+require("../complementos/connect_db.php");
+ ?>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -7,7 +12,7 @@
 		<?php
 			if(isset($_GET["mensaje_error"])){
 				echo '<script type="text/javascript">
-							alert("'.$_GET["mensaje_error"].'.replace("<br>","\n")");
+							alert("'.$_GET["mensaje_error"].'");
 						</script>';
 			}
 
@@ -33,18 +38,28 @@
 						</td>
 				</tr>
 				<tr>
-					<td>Documento de identidad: </td>
+					<td>Documento de identidad: * </td>
 					<td>
 					<select name="tipo_documento" id="tipo_documento">
 							<option value="0"> Seleccione un tipo de documento </option>
-							<option value="1"> CC </option>
-							<option value="2"> CE </option>
-							<option value="3"> TI </option>
-							<option value="4"> PA </option>
-							<option value="5"> PP </option>
+
+							<?php
+							$query = "SELECT ab_tipo_documento,id_tipo_documento from tipo_documento WHERE activo=1";
+							$result = mysqli_query($connect_db,$query);
+
+							while($var = mysqli_fetch_array($result)){
+								$select="";
+								if($var['id_tipo_documento']==$_SESSION['tipo_documento']){
+									$select="selected";
+								}								
+								echo "<option value=".$var['id_tipo_documento']." $select>".$var['ab_tipo_documento']."</option>";								
+								
+							}
+							?>							
+					</select>
 					<td><!--Campo de texto-->
 					<input type="text"  name="num_documento" id="num_documento"
-			placeholder= "Ej: 1234567890"  required></td>
+			placeholder= "Ej: 1234567890" value="<?php echo $_SESSION["num_documento"]?>"  required></td>
 					<td>Fotografía:					
 					<input type="file" name="foto_empleado" id="foto_empleado">
 					</td>
@@ -53,19 +68,18 @@
 					<td>Nombres: </td>
 					<td><!--Campo de texto-->
 						<input type="text" name="nombres" id="nombres" 
-			placeholder= "Introduzca sus nombres"></td>
+			placeholder= "Introduzca sus nombres" value="<?php echo $_SESSION["nombres"]?>" ></td>
 					<td>Apellidos: </td>
 					<td><!--Campo de texto-->
 						<input type="text" name="apellidos" id="aspellidos" 
-			placeholder= "Introduzca sus apellidos"></td>
+			placeholder= "Introduzca sus apellidos" value="<?php echo $_SESSION["apellidos"]?>" ></td>
 				<tr>
 				<td>Fecha de nacimiento: </td>
 					<td><!--Campo de texto-->
 						<input type="date" name="fecha_nacimiento" id="fecha_nacimiento">
 				<td>Correo: </td>
 					<td><!--Campo de texto-->
-						<input type="email" name="correo" id="correo" 
-						>
+						<input type="email" name="correo" id="correo" value="<?php echo $_SESSION["correo"]?>" >
 				</tr>
 				<tr>
 				
@@ -191,9 +205,9 @@
 							<option value="3"> Apoyo Económico </option>
 							
 					<td><!--Campo de texto-->
-						Monto asignación salarial
+						Monto asignación salarial *
 					<input type="number" max="1000000000" name="salario" id="salario"
-			placeholder= "Ej: 5000000"  required></td>
+			placeholder= "Ej: 5000000" value="<?php echo $_SESSION["salario"]?>"  required></td>
 
 						
 				</tr>
